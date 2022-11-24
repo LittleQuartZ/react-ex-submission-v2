@@ -4,6 +4,7 @@ import GLOBAL_CONFIG from "./globals";
 export const BASE_URL = "https://forum-api.dicoding.dev/v1";
 export const ENDPOINTS = {
   getAllThreads: "/threads",
+  createThread: "/thread",
   login: "/login",
   getProfile: "/users/me",
 };
@@ -37,6 +38,12 @@ export type ILogin = {
   password: string;
 };
 
+export type IThread = {
+  title: Thread["title"];
+  body: Thread["body"];
+  category: Thread["category"];
+};
+
 export const getToken = () => {
   return localStorage.getItem(GLOBAL_CONFIG.API_LOCAL_KEY);
 };
@@ -67,6 +74,30 @@ export const getAllThreads = async () => {
     }
 
     return response.data.data.threads;
+  } catch (error) {
+    if (error instanceof Error) {
+      return { error: error.message };
+    }
+
+    return { error: "unhandled error" };
+  }
+};
+
+export const createThread = async (
+  { title, body, category }: IThread,
+  token: string
+) => {
+  try {
+    const response = await withAuth(token).post<Response<{ thread: Thread }>>(
+      BASE_URL + ENDPOINTS.createThread,
+      { title, body, category }
+    );
+
+    if (response.data.status === "fail") {
+      throw new Error(`Failed posting new thread: ${response.data.message}`);
+    }
+
+    return response.data.data.thread;
   } catch (error) {
     if (error instanceof Error) {
       return { error: error.message };

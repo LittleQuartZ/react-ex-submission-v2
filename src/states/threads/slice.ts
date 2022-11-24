@@ -18,7 +18,7 @@ const threadsSlice = createSlice({
       return { ...state, list: [] };
     });
     b.addCase(addThread, (state, { payload }) => {
-      return { ...state, list: [...state.list, payload] };
+      return { ...state, list: [payload, ...state.list] };
     });
   },
 });
