@@ -29,7 +29,7 @@ export type Thread = {
   totalComments: number;
 };
 
-const getAllThreads = async () => {
+export const getAllThreads = async () => {
   try {
     const response = await axios.get<Response<{ threads: Thread[] }>>(
       BASE_URL + ENDPOINTS.getAllThreads
@@ -48,7 +48,3 @@ const getAllThreads = async () => {
     return { error: "unhandled error" };
   }
 };
-
-const api = (() => ({ getAllThreads }))();
-
-export default api;

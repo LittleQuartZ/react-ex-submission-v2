@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { type AppThunkAPI } from "..";
-import api from "../../utils/api";
+import { getAllThreads } from "../../utils/api";
 import { setThreads } from "./actions";
 
 export const asyncGetAllThreads = createAsyncThunk<
@@ -8,7 +8,7 @@ export const asyncGetAllThreads = createAsyncThunk<
   undefined,
   AppThunkAPI
 >("threads/list/fetch", async (_, { dispatch }) => {
-  const threads = await api.getAllThreads();
+  const threads = await getAllThreads();
 
   if ("error" in threads) {
     alert(threads.error);

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import api, { type Thread } from "../src/utils/api";
+import { type Thread, getAllThreads } from "../src/utils/api";
 import store from "../src/states/index";
 import {
   clearThreads,
@@ -77,9 +77,7 @@ describe("threadsSlice tests", () => {
     const { dispatch, getState } = store;
 
     vi.mock("../src/utils/api", () => ({
-      default: {
-        getAllThreads: vi.fn(),
-      },
+      getAllThreads: vi.fn(),
     }));
     vi.stubGlobal("alert", vi.fn());
 
@@ -94,12 +92,12 @@ describe("threadsSlice tests", () => {
     it("should fetch all threads and set threads", async () => {
       expect(getState().threads.list).toStrictEqual([]);
 
-      vi.mocked(api.getAllThreads).mockImplementationOnce(() =>
+      vi.mocked(getAllThreads).mockImplementationOnce(() =>
         Promise.resolve(fakeThreads)
       );
 
       await dispatch(asyncGetAllThreads());
-      expect(api.getAllThreads).toBeCalledTimes(1);
+      expect(getAllThreads).toBeCalledTimes(1);
 
       expect(getState().threads.list).toHaveLength(3);
       expect(getState().threads.list).toStrictEqual(fakeThreads);
@@ -108,12 +106,12 @@ describe("threadsSlice tests", () => {
     it("should fetch all threads and call alert", async () => {
       expect(getState().threads.list).toStrictEqual([]);
 
-      vi.mocked(api.getAllThreads).mockImplementationOnce(() =>
+      vi.mocked(getAllThreads).mockImplementationOnce(() =>
         Promise.resolve(fakeError)
       );
 
       await dispatch(asyncGetAllThreads());
-      expect(api.getAllThreads).toBeCalledTimes(1);
+      expect(getAllThreads).toBeCalledTimes(1);
 
       expect(alert).toBeCalledTimes(1);
       expect(alert).toBeCalledWith(fakeError.error);
