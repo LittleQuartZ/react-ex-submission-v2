@@ -8,6 +8,42 @@ import {
 } from "../src/states/threads/actions";
 import { asyncGetAllThreads } from "../src/states/threads/thunks";
 
+/*
+ * Threads Slice tests
+ * -------------------
+ *
+ * setThreads action
+ * 1. threads.list state must strictly equal to an empty array
+ * 2. make a copy of fakeThreads
+ * 3. dispatch setThreads with the copy
+ * 4. threads.list state must strictly equal to the copy
+ *
+ * addThread action
+ * 1. threads.list state must strictly equal to an empty array
+ * 2. make a copy of the first index of fakeThreads
+ * 3. dispatch addThread with the copy
+ * 4. threads.list state must strictly equal to an array with only the copy
+ *
+ * thunks
+ * 1. mock getAllThreads function from api
+ * 2. mock alert function
+ *
+ * asyncGetAllThreads, successful
+ * 1. threads.list state must strictly equal to an empty array
+ * 2. mock getAllThreads to return fakeThreads
+ * 3. dispatch asyncGetAllThreads
+ * 4. getAllThreads function must be called 1 time
+ * 5. threads.list state must strictly equal with fakeThreads
+ *
+ * asyncGetAllThreads, error
+ * 1. threads.list state must strictly equal to an empty array
+ * 2. mock getAllThreads to return fakeError
+ * 3. dispatch asyncGetAllThreads
+ * 4. getAllThreads function must be called 1 time
+ * 5. alert must be called 1 time with fakeError.error
+ * 6. threads.list state must strictly equal to an empty array
+ */
+
 const fakeThreads: Thread[] = [
   {
     id: "thread-1",
@@ -99,7 +135,6 @@ describe("threadsSlice tests", () => {
       await dispatch(asyncGetAllThreads());
       expect(getAllThreads).toBeCalledTimes(1);
 
-      expect(getState().threads.list).toHaveLength(3);
       expect(getState().threads.list).toStrictEqual(fakeThreads);
     });
 
@@ -116,7 +151,6 @@ describe("threadsSlice tests", () => {
       expect(alert).toBeCalledTimes(1);
       expect(alert).toBeCalledWith(fakeError.error);
 
-      expect(getState().threads.list).toHaveLength(0);
       expect(getState().threads.list).toStrictEqual([]);
     });
   });
