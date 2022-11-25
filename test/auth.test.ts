@@ -5,8 +5,15 @@ import {
   setAuthUser,
   setAuthToken,
 } from "../src/states/auth/actions";
-import { asyncLogin } from "../src/states/auth/thunks";
-import { getProfile, ILogin, login, User } from "../src/utils/api";
+import { asyncLogin, asyncRegister } from "../src/states/auth/thunks";
+import {
+  getProfile,
+  ILogin,
+  IRegister,
+  login,
+  registerUser,
+  User,
+} from "../src/utils/api";
 
 /*
  * Auth Slice tests
@@ -23,7 +30,7 @@ import { getProfile, ILogin, login, User } from "../src/utils/api";
  * 3. auth.token state must equal with dispatched token
  *
  * thunks
- * mock login and getProfile function from api
+ * mock register, login, and getProfile function from api
  * mock alert function
  *
  * asyncLogin, successful
@@ -46,6 +53,14 @@ import { getProfile, ILogin, login, User } from "../src/utils/api";
  * 3. alert must be called 1 time with error from login mocked function
  * 4. auth.token state must be undefined
  * 5. auth.user state must be undefined
+ *
+ * asyncRegister, successful
+ * 1. dispatch asyncRegister with input
+ * 2. registerUser function must be called 1 time with input
+ * 3. login function must be called 1 time with input without name
+ * 4. auth.token state must equal to the token returned from register mocked function
+ * 5. getProfile function must be called 1 time with token
+ * 6. auth.user state must equal to the user returned from getProfile mocked function
  */
 
 const fakeUser = {
@@ -86,6 +101,7 @@ describe("authSlice tests", () => {
     vi.mock("../src/utils/api", () => ({
       login: vi.fn(),
       getProfile: vi.fn(),
+      registerUser: vi.fn(),
     }));
     vi.stubGlobal("alert", vi.fn());
 
@@ -108,6 +124,13 @@ describe("authSlice tests", () => {
       }
 
       return { error: "user not found" };
+    });
+    vi.mocked(registerUser).mockImplementation(async ({ name }: IRegister) => {
+      if (name === "test") {
+        return fakeUser;
+      }
+
+      return { error: "bad request" };
     });
 
     beforeEach(() => {
@@ -160,6 +183,30 @@ describe("authSlice tests", () => {
 
       expect(getState().auth.token).toBeUndefined();
       expect(getState().auth.user).toBeUndefined();
+    });
+
+    it("should register, set token, set profile", async () => {
+      const input = {
+        name: "test",
+        email: "test",
+        password: "password",
+      };
+
+      await dispatch(asyncRegister(input));
+
+      expect(registerUser).toBeCalledWith(input);
+      expect(registerUser).toBeCalledTimes(1);
+
+      expect(alert).toBeCalledTimes(0);
+
+      expect(login).toBeCalledWith({
+        email: input.email,
+        password: input.password,
+      });
+      expect(login).toBeCalledTimes(1);
+
+      expect(getState().auth.token).toEqual("test_token");
+      expect(getState().auth.user).toEqual(fakeUser);
     });
   });
 });

@@ -41,7 +41,7 @@ export const asyncLogin = createAsyncThunk<void, ILogin, AppThunkAPI>(
       return;
     }
 
-    dispatch(asyncGetUserProfile(token));
+    await dispatch(asyncGetUserProfile(token));
   }
 );
 
@@ -55,6 +55,8 @@ export const asyncRegister = createAsyncThunk<void, IRegister, AppThunkAPI>(
       return;
     }
 
-    dispatch(asyncLogin({ email: input.email, password: input.password }));
+    await dispatch(
+      asyncLogin({ email: input.email, password: input.password })
+    );
   }
 );
