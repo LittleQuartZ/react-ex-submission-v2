@@ -155,7 +155,7 @@ describe("authSlice tests", () => {
       expect(login).toBeCalledWith(input);
       expect(login).toBeCalledTimes(1);
 
-      expect(alert).toBeCalledWith("Login failed: password is wrong");
+      expect(alert).toBeCalledWith("password is wrong");
       expect(alert).toBeCalledTimes(1);
 
       expect(getState().auth.token).toBeUndefined();
