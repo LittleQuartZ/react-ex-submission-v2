@@ -11,16 +11,12 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - name: Install Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16
-      - uses: pnpm/action-setup@v2
-        name: Install pnpm
-        id: pnpm-install
-        with:
-          version: 7
-      - name: Install dependencies
-        run: pnpm install
-      - name: Test with Vitest
-        run: pnpm test
+    - uses: actions/checkout@v3
+    - name: Use Node.js 16
+      uses: actions/setup-node@v3
+      with:
+        node-version: 16
+    - name: npm install and test
+      run: |
+        npm install
+        npm run ci:test
