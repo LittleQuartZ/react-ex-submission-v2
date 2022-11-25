@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import GLOBAL_CONFIG from "./globals";
 
 export const BASE_URL = "https://forum-api.dicoding.dev/v1";
@@ -52,6 +52,18 @@ export type IRegister = {
   password: string;
 };
 
+const handleError = (error: unknown) => {
+  if (error instanceof AxiosError) {
+    return { error: error.response?.data.message };
+  }
+
+  if (error instanceof Error) {
+    return { error: error.message };
+  }
+
+  return { error: "unhandled error" };
+};
+
 export const getToken = () => {
   return localStorage.getItem(GLOBAL_CONFIG.API_LOCAL_KEY);
 };
@@ -83,11 +95,7 @@ export const getAllThreads = async () => {
 
     return response.data.data.threads;
   } catch (error) {
-    if (error instanceof Error) {
-      return { error: error.message };
-    }
-
-    return { error: "unhandled error" };
+    return handleError(error);
   }
 };
 
@@ -107,11 +115,7 @@ export const createThread = async (
 
     return response.data.data.thread;
   } catch (error) {
-    if (error instanceof Error) {
-      return { error: error.message };
-    }
-
-    return { error: "unhandled error" };
+    return handleError(error);
   }
 };
 
@@ -129,11 +133,7 @@ export const login = async ({ email, password }: ILogin) => {
     setToken(response.data.data.token);
     return response.data.data.token;
   } catch (error) {
-    if (error instanceof Error) {
-      return { error: error.message };
-    }
-
-    return { error: "unhandled error" };
+    return handleError(error);
   }
 };
 
@@ -150,11 +150,7 @@ export const getProfile = async (token: string) => {
 
     return response.data.data.user;
   } catch (error) {
-    if (error instanceof Error) {
-      return { error: error.message };
-    }
-
-    return { error: "unhandled error" };
+    return handleError(error);
   }
 };
 
@@ -170,8 +166,10 @@ export const getAllUsers = async () => {
 
     return response.data.data.users;
   } catch (error) {
-    if (error instanceof Error) {
-      return { error: error.message };
+    return handleError(error);
+  }
+};
+
 export const registerUser = async ({ name, email, password }: IRegister) => {
   try {
     const response = await axios.post<Response<{ user: User }>>(
@@ -185,10 +183,6 @@ export const registerUser = async ({ name, email, password }: IRegister) => {
 
     return response.data.data.user;
   } catch (error) {
-    if (error instanceof Error) {
-      return { error: error.message };
-    }
-
-    return { error: "unhandled error" };
+    return handleError(error);
   }
 };
