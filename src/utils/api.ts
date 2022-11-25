@@ -7,6 +7,7 @@ export const ENDPOINTS = {
   createThread: "/thread",
   login: "/login",
   getProfile: "/users/me",
+  getAllUsers: "/users",
 };
 
 export type Response<T> = {
@@ -141,6 +142,26 @@ export const getProfile = async (token: string) => {
     }
 
     return response.data.data.user;
+  } catch (error) {
+    if (error instanceof Error) {
+      return { error: error.message };
+    }
+
+    return { error: "unhandled error" };
+  }
+};
+
+export const getAllUsers = async () => {
+  try {
+    const response = await axios.get<Response<{ users: User[] }>>(
+      BASE_URL + ENDPOINTS.getAllUsers
+    );
+
+    if (response.data.status === "fail") {
+      throw new Error(`Failed getting all users: ${response.data.message}`);
+    }
+
+    return response.data.data.users;
   } catch (error) {
     if (error instanceof Error) {
       return { error: error.message };

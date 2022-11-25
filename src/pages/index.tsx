@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import ThreadItem from "../components/ThreadItem";
 import { useAppDispatch, useAppSelector } from "../hooks/redux";
 import { asyncGetAllThreads } from "../states/threads/thunks";
+import { asyncGetAllUsers } from "../states/users/thunks";
 
 const IndexPage = () => {
   const threads = useAppSelector((state) => state.threads.list);
@@ -10,6 +11,7 @@ const IndexPage = () => {
 
   useEffect(() => {
     dispatch(asyncGetAllThreads());
+    dispatch(asyncGetAllUsers());
   }, []);
 
   return (

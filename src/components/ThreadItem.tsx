@@ -7,9 +7,11 @@ type Props = {
   thread: Thread;
 };
 
-// TODO: match threads and users, display owner name
 const ThreadItem = ({ thread }: Props) => {
-  const authedUser = useAppSelector((state) => state.auth.user);
+  const [authedUser, owner] = useAppSelector((state) => [
+    state.auth.user,
+    state.users.find((user) => user.id === thread.ownerId),
+  ]);
   const [voted, setVoted] = useState<-1 | 0 | 1>(0);
 
   useEffect(() => {
@@ -26,7 +28,7 @@ const ThreadItem = ({ thread }: Props) => {
     <article className="group relative border-2 border-indigo-300 bg-white p-4 transition hover:border-indigo-500">
       <h1 className="text-xl font-bold">{thread.title}</h1>
       <section className="flex justify-between text-sm">
-        <h2 className="text-indigo-700">@{thread.ownerId}</h2>
+        <h2 className="text-indigo-700">@{owner?.name}</h2>
         <span className="text-gray-500">
           {new Date(thread.createdAt).toLocaleString()}
         </span>
