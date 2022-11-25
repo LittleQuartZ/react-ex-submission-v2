@@ -15,7 +15,7 @@ const IndexPage = () => {
   }, []);
 
   return (
-    <main className="grid gap-4 p-4">
+    <main className="container mx-auto grid gap-4 p-4">
       {threads &&
         threads.map((thread) => <ThreadItem thread={thread} key={thread.id} />)}
     </main>

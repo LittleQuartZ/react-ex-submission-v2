@@ -8,19 +8,22 @@ import Navbar from "./components/Navbar";
 import { indexRoute } from "./pages";
 import { Provider } from "react-redux";
 import store from "./states";
+import { loginRoute } from "./pages/login";
 
-const routeConfig = createRouteConfig().addChildren([indexRoute]);
+export const routeConfig = createRouteConfig().addChildren([
+  indexRoute,
+  loginRoute,
 
-const router = createReactRouter({ routeConfig });
+]);
+
+export const rootRouter = createReactRouter({ routeConfig });
 
 function App() {
   return (
-    <RouterProvider router={router}>
+    <RouterProvider router={rootRouter}>
       <Provider store={store}>
         <Navbar />
-        <div className="container mx-auto">
-          <Outlet />
-        </div>
+        <Outlet />
       </Provider>
     </RouterProvider>
   );
