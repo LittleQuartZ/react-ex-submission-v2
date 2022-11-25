@@ -25,6 +25,9 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: npm ci
-    - run: npm run ci:test
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v2.2.4
+    - name: run install
+      run: pnpm install
+    - name: run test
+      run: pnpm ci:test
