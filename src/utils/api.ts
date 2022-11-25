@@ -4,7 +4,7 @@ import GLOBAL_CONFIG from "./globals";
 export const BASE_URL = "https://forum-api.dicoding.dev/v1";
 export const ENDPOINTS = {
   getAllThreads: "/threads",
-  createThread: "/thread",
+  createThread: "/threads",
   login: "/login",
   getProfile: "/users/me",
   getAllUsers: "/users",
@@ -54,10 +54,18 @@ export type IRegister = {
 
 const handleError = (error: unknown) => {
   if (error instanceof AxiosError) {
-    return { error: error.response?.data.message };
+    const message = error.response?.data.message as string;
+    if (message.toLowerCase().includes("token")) {
+      clearToken();
+    }
+    return { error: message };
   }
 
   if (error instanceof Error) {
+    const message = error.message;
+    if (message.toLowerCase().includes("token")) {
+      clearToken();
+    }
     return { error: error.message };
   }
 
@@ -70,12 +78,11 @@ export const getToken = () => {
 export const setToken = (token: string) => {
   localStorage.setItem(GLOBAL_CONFIG.API_LOCAL_KEY, token);
 };
+export const clearToken = () => {
+  localStorage.removeItem(GLOBAL_CONFIG.API_LOCAL_KEY);
+};
 
 const withAuth = (token: string) => {
-  if (!token) {
-    throw new Error("No token please login!");
-  }
-
   return axios.create({
     headers: {
       Authorization: `Bearer ${token}`,
