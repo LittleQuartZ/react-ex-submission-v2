@@ -54,10 +54,18 @@ export type IRegister = {
 
 const handleError = (error: unknown) => {
   if (error instanceof AxiosError) {
-    return { error: error.response?.data.message };
+    const message = error.response?.data.message as string;
+    if (message.toLowerCase().includes("token")) {
+      clearToken();
+    }
+    return { error: message };
   }
 
   if (error instanceof Error) {
+    const message = error.message;
+    if (message.toLowerCase().includes("token")) {
+      clearToken();
+    }
     return { error: error.message };
   }
 

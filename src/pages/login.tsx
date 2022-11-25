@@ -1,6 +1,7 @@
 import { createRouteConfig } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { rootRouter } from "../App";
+import InputBox from "../components/InputBox";
 import { useAppDispatch, useAppSelector } from "../hooks/redux";
 import { asyncLogin } from "../states/auth/thunks";
 
@@ -29,14 +30,14 @@ const LoginPage = () => {
       className="container absolute top-1/2 left-1/2 mx-auto flex -translate-x-1/2 -translate-y-1/2 flex-col justify-center gap-4 p-4"
     >
       <h1 className="text-2xl font-bold">Login with your account!</h1>
-      <input
+      <InputBox
         type="email"
         placeholder="Email"
         className="border-2 border-indigo-500 p-4 text-lg"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
       />
-      <input
+      <InputBox
         type="password"
         placeholder="Password"
         className="border-2 border-indigo-500 p-4 text-lg"
