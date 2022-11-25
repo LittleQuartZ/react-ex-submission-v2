@@ -1,6 +1,12 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { AppThunkAPI } from "..";
-import { getProfile, ILogin, login } from "../../utils/api";
+import {
+  getProfile,
+  ILogin,
+  IRegister,
+  login,
+  registerUser,
+} from "../../utils/api";
 import { setAuthUser, setAuthToken } from "./actions";
 
 export const asyncGetUserProfile = createAsyncThunk<void, string, AppThunkAPI>(
@@ -23,7 +29,7 @@ export const asyncLogin = createAsyncThunk<void, ILogin, AppThunkAPI>(
     const loginResponse = await login(input);
 
     if (typeof loginResponse === "object") {
-      alert("Login failed: " + loginResponse.error);
+      alert(loginResponse.error);
       return;
     }
 
@@ -36,5 +42,19 @@ export const asyncLogin = createAsyncThunk<void, ILogin, AppThunkAPI>(
     }
 
     dispatch(asyncGetUserProfile(token));
+  }
+);
+
+export const asyncRegister = createAsyncThunk<void, IRegister, AppThunkAPI>(
+  "auth/user/register",
+  async (input, { dispatch }) => {
+    const user = await registerUser(input);
+
+    if ("error" in user) {
+      alert(user.error);
+      return;
+    }
+
+    dispatch(asyncLogin({ email: input.email, password: input.password }));
   }
 );

@@ -9,11 +9,12 @@ import { indexRoute } from "./pages";
 import { Provider } from "react-redux";
 import store from "./states";
 import { loginRoute } from "./pages/login";
+import { registerRoute } from "./pages/register";
 
 export const routeConfig = createRouteConfig().addChildren([
   indexRoute,
   loginRoute,
-
+  registerRoute,
 ]);
 
 export const rootRouter = createReactRouter({ routeConfig });

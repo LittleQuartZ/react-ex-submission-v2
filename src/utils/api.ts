@@ -8,6 +8,7 @@ export const ENDPOINTS = {
   login: "/login",
   getProfile: "/users/me",
   getAllUsers: "/users",
+  registerUser: "/register",
 };
 
 export type Response<T> = {
@@ -43,6 +44,12 @@ export type IThread = {
   title: Thread["title"];
   body: Thread["body"];
   category: Thread["category"];
+};
+
+export type IRegister = {
+  name: string;
+  email: string;
+  password: string;
 };
 
 export const getToken = () => {
@@ -162,6 +169,21 @@ export const getAllUsers = async () => {
     }
 
     return response.data.data.users;
+  } catch (error) {
+    if (error instanceof Error) {
+      return { error: error.message };
+export const registerUser = async ({ name, email, password }: IRegister) => {
+  try {
+    const response = await axios.post<Response<{ user: User }>>(
+      BASE_URL + ENDPOINTS.registerUser,
+      { name, email, password }
+    );
+
+    if (response.data.status === "fail") {
+      throw new Error(`Failed registering user: ${response.data.message}`);
+    }
+
+    return response.data.data.user;
   } catch (error) {
     if (error instanceof Error) {
       return { error: error.message };
