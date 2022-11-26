@@ -4,6 +4,7 @@ import GLOBAL_CONFIG from "./globals";
 export const BASE_URL = "https://forum-api.dicoding.dev/v1";
 export const ENDPOINTS = {
   getAllThreads: "/threads",
+  getThreadDetail: "/threads/:id",
   createThread: "/threads",
   login: "/login",
   getProfile: "/users/me",
@@ -33,6 +34,20 @@ export type Thread = {
   upVotesBy: User["id"][];
   downVotesBy: User["id"][];
   totalComments: number;
+};
+
+export type Comment = {
+  id: string;
+  content: string;
+  createdAt: string;
+  owner: User;
+  upVotesBy: User["id"][];
+  downVotesBy: User["id"][];
+};
+
+export type ThreadDetail = Omit<Thread, "ownerId" | "totalComments"> & {
+  owner: User;
+  comments: Comment[];
 };
 
 export type ILogin = {
@@ -101,6 +116,22 @@ export const getAllThreads = async () => {
     }
 
     return response.data.data.threads;
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
+export const getThreadDetail = async (id: string) => {
+  try {
+    const response = await axios.get<Response<{ thread: ThreadDetail }>>(
+      BASE_URL + ENDPOINTS.getThreadDetail.split(":")[1] + id
+    );
+
+    if (response.data.status === "fail") {
+      throw new Error(`Failed getting ${id} detail: ${response.data.message}`);
+    }
+
+    return response.data.data.thread;
   } catch (error) {
     return handleError(error);
   }

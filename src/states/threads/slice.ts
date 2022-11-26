@@ -1,8 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { Thread } from "../../utils/api";
-import { addThread, clearThreads, setThreads } from "./actions";
+import { Thread, ThreadDetail } from "../../utils/api";
+import {
+  addThread,
+  clearThreadDetail,
+  clearThreads,
+  setThreadDetail,
+  setThreads,
+} from "./actions";
 
-const initialState: { list: Thread[]; detail?: Thread } = {
+const initialState: { list: Thread[]; detail?: ThreadDetail } = {
   list: [],
 };
 
@@ -19,6 +25,12 @@ const threadsSlice = createSlice({
     });
     b.addCase(addThread, (state, { payload }) => {
       return { ...state, list: [payload, ...state.list] };
+    });
+    b.addCase(setThreadDetail, (state, { payload }) => {
+      return { ...state, detail: payload };
+    });
+    b.addCase(clearThreadDetail, (state) => {
+      return { ...state, detail: undefined };
     });
   },
 });

@@ -1,7 +1,13 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { type AppThunkAPI } from "..";
-import { createThread, getAllThreads, IThread, Thread } from "../../utils/api";
-import { addThread, setThreads } from "./actions";
+import {
+  createThread,
+  getAllThreads,
+  getThreadDetail,
+  IThread,
+  Thread,
+} from "../../utils/api";
+import { addThread, setThreads, setThreadDetail } from "./actions";
 
 export const asyncGetAllThreads = createAsyncThunk<
   void,
@@ -51,5 +57,19 @@ export const asyncAddThread = createAsyncThunk<void, IThread, AppThunkAPI>(
     }
 
     dispatch(setThreads([response, ...old]));
+  }
+);
+
+export const asyncGetThreadDetail = createAsyncThunk<void, string, AppThunkAPI>(
+  "threads/detail/fetch",
+  async (id, { dispatch }) => {
+    const threadDetail = await getThreadDetail(id);
+
+    if ("error" in threadDetail) {
+      alert(threadDetail.error);
+      return;
+    }
+
+    dispatch(setThreadDetail(threadDetail));
   }
 );
