@@ -28,7 +28,7 @@ export type Thread = {
   id: string;
   title: string;
   body: string;
-  category?: string;
+  category: string;
   createdAt: string;
   ownerId: User["id"];
   upVotesBy: User["id"][];
@@ -123,15 +123,15 @@ export const getAllThreads = async () => {
 
 export const getThreadDetail = async (id: string) => {
   try {
-    const response = await axios.get<Response<{ thread: ThreadDetail }>>(
-      BASE_URL + ENDPOINTS.getThreadDetail.split(":")[1] + id
+    const response = await axios.get<Response<{ detailThread: ThreadDetail }>>(
+      BASE_URL + ENDPOINTS.getThreadDetail.split(":")[0] + id
     );
 
     if (response.data.status === "fail") {
       throw new Error(`Failed getting ${id} detail: ${response.data.message}`);
     }
 
-    return response.data.data.thread;
+    return response.data.data.detailThread;
   } catch (error) {
     return handleError(error);
   }

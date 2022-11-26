@@ -21,7 +21,7 @@ const IndexPage = () => {
   }, []);
 
   return (
-    <main className="container mx-auto grid gap-4 p-4">
+    <main className="container mx-auto grid grid-cols-1 gap-4 p-4">
       {authedUser && <ThreadForm />}
       {threads &&
         threads.map((thread) => <ThreadItem thread={thread} key={thread.id} />)}

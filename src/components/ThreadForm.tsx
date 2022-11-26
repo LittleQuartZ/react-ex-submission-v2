@@ -14,6 +14,11 @@ const ThreadForm = () => {
   const onThreadSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
 
+    if ([title, body, category].includes("")) {
+      alert("title, body, or category is empty!");
+      return;
+    }
+
     dispatch(asyncAddThread({ title, body, category }));
     setTitle("");
     setBody("");
