@@ -2,6 +2,7 @@ import { type Thread } from "../utils/api";
 import { RiArrowDownSLine, RiArrowUpSLine, RiChat3Line } from "react-icons/ri";
 import { useAppSelector } from "../hooks/redux";
 import { useEffect, useState } from "react";
+import { rootRouter } from "../App";
 
 type Props = {
   thread: Thread;
@@ -26,9 +27,15 @@ const ThreadItem = ({ thread }: Props) => {
 
   return (
     <article className="group relative border-2 border-indigo-300 bg-white p-4 transition hover:border-indigo-500">
-      <h1 className="text-xl font-bold">{thread.title}</h1>
+      <rootRouter.Link
+        to="/threads/:id"
+        params={{ id: thread.id }}
+        className="text-xl font-bold line-clamp-1"
+      >
+        {thread.title}
+      </rootRouter.Link>
       <section className="flex justify-between text-sm">
-        <h2 className="text-indigo-700">@{owner?.name}</h2>
+        <span className="text-indigo-700">@{owner?.name}</span>
         <span className="text-gray-500">
           {new Date(thread.createdAt).toLocaleString()}
         </span>
@@ -45,6 +52,7 @@ const ThreadItem = ({ thread }: Props) => {
         >
           <RiArrowDownSLine className="h-6 w-6" /> {thread.downVotesBy.length}
         </button>
+        <span className="ml-4 bg-indigo-300 px-4">{thread.category}</span>
         <button className="ml-auto flex items-center gap-2">
           {thread.totalComments} <RiChat3Line className="h-6 w-6" />
         </button>
