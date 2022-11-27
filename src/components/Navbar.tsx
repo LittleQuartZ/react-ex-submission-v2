@@ -1,5 +1,9 @@
 import { useEffect } from "react";
-import { RiLoginCircleLine, RiLogoutCircleLine } from "react-icons/ri";
+import {
+  RiLoginCircleLine,
+  RiLogoutCircleLine,
+  RiTrophyLine,
+} from "react-icons/ri";
 import { rootRouter } from "../App";
 import { useAppDispatch, useAppSelector } from "../hooks/redux";
 import { clearAuth, setAuthToken } from "../states/auth/actions";
@@ -31,13 +35,16 @@ const Navbar = () => {
         <rootRouter.Link to="/" className="text-2xl font-bold hover:underline">
           Home
         </rootRouter.Link>
+        <rootRouter.Link to="/leaderboards" className="ml-auto mr-8 font-bold">
+          <RiTrophyLine className="text-2xl text-yellow-500" />
+        </rootRouter.Link>
         {isLogin ? (
-          <button onClick={onLogoutClick} className="ml-auto rounded-full">
-            <RiLogoutCircleLine className="text-2xl" />
+          <button onClick={onLogoutClick}>
+            <RiLogoutCircleLine className="text-2xl text-red-500" />
           </button>
         ) : (
-          <rootRouter.Link to="/login" className="ml-auto rounded-full">
-            <RiLoginCircleLine className="text-2xl" />
+          <rootRouter.Link to="/login">
+            <RiLoginCircleLine className="text-2xl text-green-500" />
           </rootRouter.Link>
         )}
       </nav>

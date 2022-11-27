@@ -10,6 +10,7 @@ export const ENDPOINTS = {
   getProfile: "/users/me",
   getAllUsers: "/users",
   registerUser: "/register",
+  getLeaderboards: "/leaderboards",
   vote: {
     "-1": "down-vote",
     "0": "neutral-vote",
@@ -70,6 +71,11 @@ export interface IRegister {
   name: string;
   email: string;
   password: string;
+}
+
+export interface Placement {
+  user: User;
+  score: number;
 }
 
 const handleError = (error: unknown) => {
@@ -320,6 +326,22 @@ export const voteComment = async (
     }
 
     return response.data.data.vote;
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
+export const getLeaderboards = async () => {
+  try {
+    const response = await axios.get<Response<{ leaderboards: Placement[] }>>(
+      BASE_URL + ENDPOINTS.getLeaderboards
+    );
+
+    if (response.data.status === "fail") {
+      throw new Error(`Failed to get leaderboards: ${response.data.message}`);
+    }
+
+    return response.data.data.leaderboards;
   } catch (error) {
     return handleError(error);
   }
