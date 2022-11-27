@@ -1,6 +1,7 @@
 import { createRouteConfig } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { rootRouter } from "../App";
+import Button from "../components/Button";
 import InputBox from "../components/InputBox";
 import { useAppDispatch, useAppSelector } from "../hooks/redux";
 import { asyncRegister } from "../states/auth/thunks";
@@ -32,29 +33,32 @@ const RegisterPage = () => {
     >
       <h1 className="text-2xl font-bold">Register a new account!</h1>
       <InputBox
+        color="blue"
         type="text"
         placeholder="Name"
-        className="border-2 border-blue-500 p-4 text-lg"
+        className="p-4 text-lg"
         value={name}
         onChange={(e) => setName(e.target.value)}
       />
       <InputBox
+        color="blue"
         type="email"
         placeholder="Email"
-        className="border-2 border-blue-500 p-4 text-lg"
+        className="p-4 text-lg"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
       />
       <InputBox
+        color="blue"
         type="password"
         placeholder="Password"
-        className="border-2 border-blue-500 p-4 text-lg"
+        className="p-4 text-lg"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
-      <button type="submit" className="bg-blue-500 p-4 font-bold text-white">
+      <Button type="submit" className="py-4 font-bold" color="blue">
         Register
-      </button>
+      </Button>
       <rootRouter.Link
         to="/login"
         className="ml-auto text-blue-500 hover:underline"

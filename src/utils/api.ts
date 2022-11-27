@@ -4,53 +4,79 @@ import GLOBAL_CONFIG from "./globals";
 export const BASE_URL = "https://forum-api.dicoding.dev/v1";
 export const ENDPOINTS = {
   getAllThreads: "/threads",
+  getThreadDetail: "/threads/:id",
   createThread: "/threads",
   login: "/login",
   getProfile: "/users/me",
   getAllUsers: "/users",
   registerUser: "/register",
+  getLeaderboards: "/leaderboards",
+  vote: {
+    "-1": "down-vote",
+    "0": "neutral-vote",
+    "1": "up-vote",
+  },
 };
 
-export type Response<T> = {
+export interface Response<T> {
   status: "fail" | "success";
   message: string;
   data: T;
-};
+}
 
-export type User = {
+export interface User {
   id: string;
   name: string;
   avatar: string;
-};
+}
 
-export type Thread = {
+export interface Thread {
   id: string;
   title: string;
   body: string;
-  category?: string;
+  category: string;
   createdAt: string;
   ownerId: User["id"];
   upVotesBy: User["id"][];
   downVotesBy: User["id"][];
   totalComments: number;
+}
+
+export interface Comment {
+  id: string;
+  content: string;
+  createdAt: string;
+  owner: User;
+  upVotesBy: User["id"][];
+  downVotesBy: User["id"][];
+}
+
+export type ThreadDetail = Omit<Thread, "ownerId" | "totalComments"> & {
+  owner: User;
+  comments: Comment[];
 };
 
-export type ILogin = {
+export interface ILogin {
   email: string;
   password: string;
-};
+}
 
-export type IThread = {
+export interface IThread {
   title: Thread["title"];
   body: Thread["body"];
   category: Thread["category"];
-};
+}
 
-export type IRegister = {
+export interface IRegister {
   name: string;
   email: string;
   password: string;
-};
+}
+
+export interface Placement {
+  user: User;
+  score: number;
+}
 
 const handleError = (error: unknown) => {
   if (error instanceof AxiosError) {
@@ -101,6 +127,22 @@ export const getAllThreads = async () => {
     }
 
     return response.data.data.threads;
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
+export const getThreadDetail = async (id: string) => {
+  try {
+    const response = await axios.get<Response<{ detailThread: ThreadDetail }>>(
+      BASE_URL + ENDPOINTS.getThreadDetail.split(":")[0] + id
+    );
+
+    if (response.data.status === "fail") {
+      throw new Error(`Failed getting ${id} detail: ${response.data.message}`);
+    }
+
+    return response.data.data.detailThread;
   } catch (error) {
     return handleError(error);
   }
@@ -189,6 +231,117 @@ export const registerUser = async ({ name, email, password }: IRegister) => {
     }
 
     return response.data.data.user;
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
+export interface Vote {
+  id: string;
+  userId: User["id"];
+  threadId?: Thread["id"];
+  commentId?: Comment["id"];
+  voteType: -1 | 0 | 1;
+}
+
+export const voteThread = async (
+  {
+    type,
+    threadId,
+  }: {
+    type: Vote["voteType"];
+    threadId: Vote["threadId"];
+  },
+  token: string
+) => {
+  try {
+    const response = await withAuth(token).post<Response<{ vote: Vote }>>(
+      BASE_URL +
+        ENDPOINTS.getThreadDetail.split(":")[0] +
+        threadId +
+        `/${ENDPOINTS.vote[type]}`
+    );
+
+    if (response.data.status === "fail") {
+      throw new Error(`Failed registering user: ${response.data.message}`);
+    }
+
+    return response.data.data.vote;
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
+export const createComment = async (
+  {
+    content,
+    threadId,
+  }: { content: Comment["content"]; threadId: Thread["id"] },
+  token: string
+) => {
+  try {
+    const response = await withAuth(token).post<Response<{ comment: Comment }>>(
+      BASE_URL +
+        ENDPOINTS.getThreadDetail.split(":")[0] +
+        threadId +
+        "/comments",
+      { content }
+    );
+
+    if (response.data.status === "fail") {
+      throw new Error(`Failed to post comment: ${response.data.message}`);
+    }
+
+    return response.data.data.comment;
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
+export const voteComment = async (
+  {
+    threadId,
+    commentId,
+    type,
+  }: {
+    threadId: Thread["id"];
+    commentId: Comment["id"];
+    type: Vote["voteType"];
+  },
+  token: string
+) => {
+  try {
+    const response = await withAuth(token).post<Response<{ vote: Vote }>>(
+      BASE_URL +
+        ENDPOINTS.getThreadDetail.split(":")[0] +
+        threadId +
+        "/comments/" +
+        commentId +
+        "/" +
+        ENDPOINTS.vote[type]
+    );
+
+    if (response.data.status === "fail") {
+      throw new Error(`Failed to vote comment: ${response.data.message}`);
+    }
+
+    return response.data.data.vote;
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
+export const getLeaderboards = async () => {
+  try {
+    const response = await axios.get<Response<{ leaderboards: Placement[] }>>(
+      BASE_URL + ENDPOINTS.getLeaderboards
+    );
+
+    if (response.data.status === "fail") {
+      throw new Error(`Failed to get leaderboards: ${response.data.message}`);
+    }
+
+    return response.data.data.leaderboards;
   } catch (error) {
     return handleError(error);
   }

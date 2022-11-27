@@ -2,6 +2,7 @@ import { useState } from "react";
 import { RiAddLine } from "react-icons/ri";
 import { useAppDispatch } from "../hooks/redux";
 import { asyncAddThread } from "../states/threads/thunks";
+import Button from "./Button";
 import InputBox from "./InputBox";
 
 const ThreadForm = () => {
@@ -13,6 +14,11 @@ const ThreadForm = () => {
 
   const onThreadSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
+
+    if ([title, body, category].includes("")) {
+      alert("title, body, or category is empty!");
+      return;
+    }
 
     dispatch(asyncAddThread({ title, body, category }));
     setTitle("");
@@ -48,9 +54,9 @@ const ThreadForm = () => {
         value={category}
         onChange={(e) => setCategory(e.target.value)}
       />
-      <button className="flex justify-center gap-2 bg-indigo-500 py-2 text-white">
+      <Button className="flex justify-center gap-2 bg-indigo-500 py-2 text-white">
         <RiAddLine className="text-2xl" /> Post Thread
-      </button>
+      </Button>
     </form>
   );
 };

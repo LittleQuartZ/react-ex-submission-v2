@@ -33,14 +33,14 @@ const LoginPage = () => {
       <InputBox
         type="email"
         placeholder="Email"
-        className="border-2 border-indigo-500 p-4 text-lg"
+        className="p-4 text-lg"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
       />
       <InputBox
         type="password"
         placeholder="Password"
-        className="border-2 border-indigo-500 p-4 text-lg"
+        className="p-4 text-lg"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
