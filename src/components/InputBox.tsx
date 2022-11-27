@@ -6,6 +6,7 @@ type InputProps = Partial<{
   onChange: React.ChangeEventHandler<HTMLInputElement>;
   value: string;
   placeholder: string;
+  disabled: boolean;
 }>;
 
 type TextAreaProps = Omit<InputProps, "onChange" | "type"> &
@@ -24,13 +25,16 @@ const InputBox = ({
 
   switch (color) {
     case "indigo":
-      colorClasses = "border-indigo-500";
+      colorClasses =
+        "border-indigo-500 disabled:bg-indigo-500 disabled:placeholder:text-white";
       break;
     case "blue":
-      colorClasses = "border-blue-500";
+      colorClasses =
+        "border-blue-500 disabled:bg-indigo-500 disabled:placeholder:text-white";
       break;
     default:
-      colorClasses = "border-indigo-500";
+      colorClasses =
+        "border-indigo-500 disabled:bg-indigo-500 disabled:placeholder:text-white";
       break;
   }
 

@@ -28,6 +28,11 @@ const ThreadItem = ({ thread }: Props) => {
   }, [thread]);
 
   const vote = (type: Vote["voteType"]) => {
+    if (!userId) {
+      alert("You have to login to vote!");
+      return;
+    }
+
     if ((voted === 1 && type === 1) || (voted === -1 && type === -1)) {
       setVoted(0);
       dispatch(asyncVoteThreads({ type: 0, threadId: thread.id }));
