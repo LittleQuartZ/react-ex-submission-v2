@@ -1,10 +1,11 @@
 interface Props {
   type?: "submit";
-  className: string;
+  className?: string;
   children: React.ReactNode;
   full?: boolean;
   color?: "indigo" | "blue" | "red";
   disabled?: boolean;
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
 }
 
 const Button = (props: Props) => {
@@ -28,6 +29,7 @@ const Button = (props: Props) => {
 
   return (
     <button
+      onClick={props.onClick}
       disabled={props.disabled}
       className={`${props.className} ${colorClasses} ${
         props.full && "w-full"

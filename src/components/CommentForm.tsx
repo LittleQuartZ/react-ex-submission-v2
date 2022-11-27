@@ -30,6 +30,7 @@ const CommentForm = () => {
         onChange={(e) => setContent(e.target.value)}
       />
       <Button
+        data-test="newComment"
         disabled={!isLogin}
         className="items-center disabled:border-y-2 disabled:border-r-2 disabled:border-indigo-500"
         type="submit"

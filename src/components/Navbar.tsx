@@ -39,11 +39,11 @@ const Navbar = () => {
           <RiTrophyLine className="text-2xl text-yellow-500" />
         </rootRouter.Link>
         {isLogin ? (
-          <button onClick={onLogoutClick}>
+          <button id="logoutButton" onClick={onLogoutClick}>
             <RiLogoutCircleLine className="text-2xl text-red-500" />
           </button>
         ) : (
-          <rootRouter.Link to="/login">
+          <rootRouter.Link id="loginButton" to="/login">
             <RiLoginCircleLine className="text-2xl text-green-500" />
           </rootRouter.Link>
         )}

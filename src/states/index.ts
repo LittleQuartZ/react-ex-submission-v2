@@ -13,6 +13,16 @@ const store = configureStore({
   },
 });
 
+export const getStore = () =>
+  configureStore({
+    reducer: {
+      [threadsSlice.name]: threadsSlice.reducer,
+      [authSlice.name]: authSlice.reducer,
+      [usersSlice.name]: usersSlice.reducer,
+      [leaderboardsSlice.name]: leaderboardsSlice.reducer,
+    },
+  });
+
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 export type AppThunkAPI = {

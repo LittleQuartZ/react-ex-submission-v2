@@ -41,6 +41,7 @@ const InputBox = ({
   if (asTextArea) {
     return (
       <textarea
+        data-test={props.placeholder}
         {...props}
         className={`min-h-[100px] ${commonClasses} ${props.className} ${colorClasses}`}
       />
@@ -49,6 +50,7 @@ const InputBox = ({
 
   return (
     <input
+      data-test={props.placeholder}
       {...props}
       className={`${commonClasses} ${props.className} ${colorClasses}`}
     />
