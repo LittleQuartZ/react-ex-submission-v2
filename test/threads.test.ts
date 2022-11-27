@@ -79,6 +79,7 @@ const fakeThreads: Thread[] = [
     upVotesBy: [],
     downVotesBy: [],
     totalComments: 1,
+    category: "testing",
   },
   {
     id: "thread-2",
@@ -89,6 +90,7 @@ const fakeThreads: Thread[] = [
     upVotesBy: [],
     downVotesBy: [],
     totalComments: 2,
+    category: "testing",
   },
   {
     id: "thread-3",
@@ -99,6 +101,7 @@ const fakeThreads: Thread[] = [
     upVotesBy: [],
     downVotesBy: [],
     totalComments: 3,
+    category: "testing",
   },
 ];
 

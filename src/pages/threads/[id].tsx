@@ -123,7 +123,7 @@ const ThreadDetailPage = () => {
                 <section className="mt-2 flex gap-4">
                   <button
                     className={`flex items-center ${
-                      isVoted(comment.upVotesBy) && "text-green-500"
+                      voted === 1 && "text-green-500"
                     }`}
                   >
                     <RiArrowUpSLine className="text-lg" />{" "}
@@ -131,7 +131,7 @@ const ThreadDetailPage = () => {
                   </button>
                   <button
                     className={`flex items-center ${
-                      isVoted(comment.downVotesBy) && "text-green-500"
+                      voted === -1 && "text-green-500"
                     }`}
                   >
                     <RiArrowDownSLine className="text-lg" />{" "}
