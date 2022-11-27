@@ -10,7 +10,8 @@ export const ENDPOINTS = {
   getProfile: "/users/me",
   getAllUsers: "/users",
   registerUser: "/register",
-  voteThread: {
+  getLeaderboards: "/leaderboards",
+  vote: {
     "-1": "down-vote",
     "0": "neutral-vote",
     "1": "up-vote",
@@ -70,6 +71,11 @@ export interface IRegister {
   name: string;
   email: string;
   password: string;
+}
+
+export interface Placement {
+  user: User;
+  score: number;
 }
 
 const handleError = (error: unknown) => {
@@ -233,7 +239,8 @@ export const registerUser = async ({ name, email, password }: IRegister) => {
 export interface Vote {
   id: string;
   userId: User["id"];
-  threadId: Thread["id"];
+  threadId?: Thread["id"];
+  commentId?: Comment["id"];
   voteType: -1 | 0 | 1;
 }
 
@@ -252,7 +259,7 @@ export const voteThread = async (
       BASE_URL +
         ENDPOINTS.getThreadDetail.split(":")[0] +
         threadId +
-        `/${ENDPOINTS.voteThread[type]}`
+        `/${ENDPOINTS.vote[type]}`
     );
 
     if (response.data.status === "fail") {
@@ -260,6 +267,81 @@ export const voteThread = async (
     }
 
     return response.data.data.vote;
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
+export const createComment = async (
+  {
+    content,
+    threadId,
+  }: { content: Comment["content"]; threadId: Thread["id"] },
+  token: string
+) => {
+  try {
+    const response = await withAuth(token).post<Response<{ comment: Comment }>>(
+      BASE_URL +
+        ENDPOINTS.getThreadDetail.split(":")[0] +
+        threadId +
+        "/comments",
+      { content }
+    );
+
+    if (response.data.status === "fail") {
+      throw new Error(`Failed to post comment: ${response.data.message}`);
+    }
+
+    return response.data.data.comment;
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
+export const voteComment = async (
+  {
+    threadId,
+    commentId,
+    type,
+  }: {
+    threadId: Thread["id"];
+    commentId: Comment["id"];
+    type: Vote["voteType"];
+  },
+  token: string
+) => {
+  try {
+    const response = await withAuth(token).post<Response<{ vote: Vote }>>(
+      BASE_URL +
+        ENDPOINTS.getThreadDetail.split(":")[0] +
+        threadId +
+        "/comments/" +
+        commentId +
+        "/" +
+        ENDPOINTS.vote[type]
+    );
+
+    if (response.data.status === "fail") {
+      throw new Error(`Failed to vote comment: ${response.data.message}`);
+    }
+
+    return response.data.data.vote;
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
+export const getLeaderboards = async () => {
+  try {
+    const response = await axios.get<Response<{ leaderboards: Placement[] }>>(
+      BASE_URL + ENDPOINTS.getLeaderboards
+    );
+
+    if (response.data.status === "fail") {
+      throw new Error(`Failed to get leaderboards: ${response.data.message}`);
+    }
+
+    return response.data.data.leaderboards;
   } catch (error) {
     return handleError(error);
   }

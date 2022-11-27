@@ -1,5 +1,5 @@
 import { createAction } from "@reduxjs/toolkit";
-import { ThreadDetail, Vote, type Thread } from "../../utils/api";
+import { Comment, ThreadDetail, Vote, type Thread } from "../../utils/api";
 
 export const setThreads = createAction<Thread[], "threads/list/set">(
   "threads/list/set"
@@ -26,3 +26,17 @@ export const setThreadDetailVote = createAction<
   Vote,
   "threads/detail/vote/set"
 >("threads/detail/vote/set");
+
+export const addThreadDetailComment = createAction<
+  Comment,
+  "threads/detail/comments/add"
+>("threads/detail/comments/add");
+export const setThreadDetailComment = createAction<
+  Comment[],
+  "threads/detail/comments/set"
+>("threads/detail/comments/set");
+
+export const setThreadDetailCommentVote = createAction<
+  Vote,
+  "threads/detail/comments/vote"
+>("threads/detail/comments/vote");

@@ -11,12 +11,14 @@ import store from "./states";
 import { loginRoute } from "./pages/login";
 import { registerRoute } from "./pages/register";
 import { threadDetailRoute } from "./pages/threads/[id]";
+import { leaderboardsRoute } from "./pages/leaderboards";
 
 export const routeConfig = createRouteConfig().addChildren([
   indexRoute,
   loginRoute,
   registerRoute,
   threadDetailRoute,
+  leaderboardsRoute,
 ]);
 
 export const rootRouter = createReactRouter({ routeConfig });

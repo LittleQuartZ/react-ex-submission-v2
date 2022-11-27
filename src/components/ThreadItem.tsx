@@ -28,6 +28,11 @@ const ThreadItem = ({ thread }: Props) => {
   }, [thread]);
 
   const vote = (type: Vote["voteType"]) => {
+    if (!userId) {
+      alert("You have to login to vote!");
+      return;
+    }
+
     if ((voted === 1 && type === 1) || (voted === -1 && type === -1)) {
       setVoted(0);
       dispatch(asyncVoteThreads({ type: 0, threadId: thread.id }));
@@ -56,12 +61,14 @@ const ThreadItem = ({ thread }: Props) => {
       <p className="my-2 line-clamp-3">{thread.body}</p>
       <section className="flex gap-2 text-gray-700">
         <button
+          data-test="upvote"
           onClick={() => vote(1)}
           className={`flex items-center ${voted === 1 && "text-green-500"}`}
         >
           <RiArrowUpSLine className="h-6 w-6" /> {thread.upVotesBy.length}
         </button>
         <button
+          data-test="downvote"
           onClick={() => vote(-1)}
           className={`flex items-center ${voted === -1 && "text-red-500"}`}
         >

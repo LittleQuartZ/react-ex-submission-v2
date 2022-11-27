@@ -1,8 +1,9 @@
 import { createRouteConfig, useMatch } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { RiArrowUpSLine, RiArrowDownSLine, RiChat3Line } from "react-icons/ri";
+import { RiArrowUpSLine, RiArrowDownSLine } from "react-icons/ri";
 import { z } from "zod";
-import InputBox from "../../components/InputBox";
+import CommentForm from "../../components/CommentForm";
+import CommentItem from "../../components/CommentItem";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { clearThreadDetail } from "../../states/threads/actions";
 import {
@@ -42,6 +43,11 @@ const ThreadDetailPage = () => {
   }, [threadDetail]);
 
   const vote = (type: Vote["voteType"]) => {
+    if (!userId) {
+      alert("You have to login to vote!");
+      return;
+    }
+
     if ((voted === 1 && type === 1) || (voted === -1 && type === -1)) {
       setVoted(0);
       dispatch(
@@ -98,47 +104,9 @@ const ThreadDetailPage = () => {
           </section>
           <section className="flex flex-col">
             <h1 className="mb-4 text-xl">Comments:</h1>
-            <form className="flex items-stretch">
-              <InputBox
-                type="text"
-                className="w-full"
-                placeholder="insert a new comment"
-              />
-              <button className="bg-indigo-500 px-4 text-white" type="submit">
-                <RiChat3Line className="text-3xl" />
-              </button>
-            </form>
+            <CommentForm />
             {threadDetail.comments.map((comment) => (
-              <article
-                key={comment.id}
-                className="border-x-2 border-indigo-500 px-4 py-2 last:border-b-2"
-              >
-                <header className="flex justify-between">
-                  <h1 className="text-indigo-700">@{comment.owner.name}</h1>
-                  <h2 className="text-sm text-gray-500">
-                    {new Date(comment.createdAt).toLocaleString()}
-                  </h2>
-                </header>
-                <p>{comment.content}</p>
-                <section className="mt-2 flex gap-4">
-                  <button
-                    className={`flex items-center ${
-                      voted === 1 && "text-green-500"
-                    }`}
-                  >
-                    <RiArrowUpSLine className="text-lg" />{" "}
-                    {comment.upVotesBy.length}
-                  </button>
-                  <button
-                    className={`flex items-center ${
-                      voted === -1 && "text-green-500"
-                    }`}
-                  >
-                    <RiArrowDownSLine className="text-lg" />{" "}
-                    {comment.downVotesBy.length}
-                  </button>
-                </section>
-              </article>
+              <CommentItem comment={comment} key={comment.id} />
             ))}
           </section>
         </>

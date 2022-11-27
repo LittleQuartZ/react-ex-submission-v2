@@ -1,10 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { Thread, ThreadDetail } from "../../utils/api";
+import { Comment, Thread, ThreadDetail } from "../../utils/api";
 import {
   addThread,
+  addThreadDetailComment,
   clearThreadDetail,
   clearThreads,
   setThreadDetail,
+  setThreadDetailComment,
+  setThreadDetailCommentVote,
   setThreadDetailVote,
   setThreads,
   setThreadsVote,
@@ -109,6 +112,74 @@ const threadsSlice = createSlice({
       }
 
       return { ...state, detail: newDetail as ThreadDetail };
+    });
+    b.addCase(addThreadDetailComment, (state, { payload }) => {
+      return {
+        ...state,
+        detail: {
+          ...state.detail,
+          comments: [payload].concat(...(state.detail?.comments as Comment[])),
+        } as ThreadDetail,
+      };
+    });
+    b.addCase(setThreadDetailComment, (state, { payload }) => {
+      return {
+        ...state,
+        detail: {
+          ...state.detail,
+          comments: payload,
+        } as ThreadDetail,
+      };
+    });
+    b.addCase(setThreadDetailCommentVote, (state, { payload }) => {
+      return {
+        ...state,
+        detail: {
+          ...state.detail,
+          comments: state.detail?.comments.map((comment) => {
+            if (!(comment.id === payload.commentId)) {
+              return comment;
+            }
+
+            let newVote;
+
+            switch (payload.voteType) {
+              case 1:
+                newVote = {
+                  downVotesBy: comment.downVotesBy.filter(
+                    (id) => !(id === payload.userId)
+                  ),
+                  upVotesBy: comment.upVotesBy.concat([payload.userId]),
+                };
+                break;
+
+              case -1:
+                newVote = {
+                  upVotesBy: comment.upVotesBy.filter(
+                    (id) => !(id === payload.userId)
+                  ),
+                  downVotesBy: comment.downVotesBy.concat([payload.userId]),
+                };
+                break;
+              case 0:
+                newVote = {
+                  downVotesBy: comment.downVotesBy.filter(
+                    (id) => !(id === payload.userId)
+                  ),
+                  upVotesBy: comment.upVotesBy.filter(
+                    (id) => !(id === payload.userId)
+                  ),
+                };
+                break;
+            }
+
+            return {
+              ...comment,
+              ...newVote,
+            };
+          }),
+        } as ThreadDetail,
+      };
     });
   },
 });
