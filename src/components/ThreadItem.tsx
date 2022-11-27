@@ -1,29 +1,42 @@
-import { type Thread } from "../utils/api";
+import { Vote, type Thread } from "../utils/api";
 import { RiArrowDownSLine, RiArrowUpSLine, RiChat3Line } from "react-icons/ri";
-import { useAppSelector } from "../hooks/redux";
+import { useAppDispatch, useAppSelector } from "../hooks/redux";
 import { useEffect, useState } from "react";
 import { rootRouter } from "../App";
+import { asyncVoteThreads } from "../states/threads/thunks";
 
 type Props = {
   thread: Thread;
 };
 
 const ThreadItem = ({ thread }: Props) => {
-  const [authedUser, owner] = useAppSelector((state) => [
-    state.auth.user,
+  const [userId, owner] = useAppSelector((state) => [
+    state.auth.user?.id,
     state.users.find((user) => user.id === thread.ownerId),
   ]);
   const [voted, setVoted] = useState<-1 | 0 | 1>(0);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (authedUser) {
-      thread.upVotesBy.includes(authedUser.id)
+    if (userId) {
+      thread.upVotesBy.includes(userId)
         ? setVoted(1)
-        : thread.downVotesBy.includes(authedUser.id)
+        : thread.downVotesBy.includes(userId)
         ? setVoted(-1)
         : setVoted(0);
     }
-  }, [authedUser]);
+  }, [thread]);
+
+  const vote = (type: Vote["voteType"]) => {
+    if ((voted === 1 && type === 1) || (voted === -1 && type === -1)) {
+      setVoted(0);
+      dispatch(asyncVoteThreads({ type: 0, threadId: thread.id }));
+      return;
+    }
+
+    setVoted(type);
+    dispatch(asyncVoteThreads({ type, threadId: thread.id }));
+  };
 
   return (
     <article className="group relative border-2 border-indigo-300 bg-white p-4 transition hover:border-indigo-500">
@@ -43,11 +56,13 @@ const ThreadItem = ({ thread }: Props) => {
       <p className="my-2 line-clamp-3">{thread.body}</p>
       <section className="flex gap-2 text-gray-700">
         <button
+          onClick={() => vote(1)}
           className={`flex items-center ${voted === 1 && "text-green-500"}`}
         >
           <RiArrowUpSLine className="h-6 w-6" /> {thread.upVotesBy.length}
         </button>
         <button
+          onClick={() => vote(-1)}
           className={`flex items-center ${voted === -1 && "text-red-500"}`}
         >
           <RiArrowDownSLine className="h-6 w-6" /> {thread.downVotesBy.length}
