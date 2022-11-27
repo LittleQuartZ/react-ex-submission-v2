@@ -1,11 +1,15 @@
 import { createRouteConfig, useMatch } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { RiArrowUpSLine, RiArrowDownSLine, RiChat3Line } from "react-icons/ri";
 import { z } from "zod";
 import InputBox from "../../components/InputBox";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { clearThreadDetail } from "../../states/threads/actions";
-import { asyncGetThreadDetail } from "../../states/threads/thunks";
+import {
+  asyncGetThreadDetail,
+  asyncVoteThreadDetail,
+} from "../../states/threads/thunks";
+import { ThreadDetail, Vote } from "../../utils/api";
 
 const ThreadDetailPage = () => {
   const { params } = useMatch(threadDetailRoute.id);
@@ -17,13 +21,6 @@ const ThreadDetailPage = () => {
   ]);
   const dispatch = useAppDispatch();
 
-  const isVoted = (ids: string[] | undefined) => {
-    return userId && ids && ids.includes(userId);
-  };
-
-  const upVoted = isVoted(threadDetail?.upVotesBy);
-  const downVoted = isVoted(threadDetail?.downVotesBy);
-
   useEffect(() => {
     dispatch(asyncGetThreadDetail(id));
 
@@ -31,6 +28,39 @@ const ThreadDetailPage = () => {
       dispatch(clearThreadDetail());
     };
   }, []);
+
+  const [voted, setVoted] = useState<-1 | 0 | 1>(0);
+
+  useEffect(() => {
+    if (userId) {
+      threadDetail?.upVotesBy.includes(userId)
+        ? setVoted(1)
+        : threadDetail?.downVotesBy.includes(userId)
+        ? setVoted(-1)
+        : setVoted(0);
+    }
+  }, [threadDetail]);
+
+  const vote = (type: Vote["voteType"]) => {
+    if ((voted === 1 && type === 1) || (voted === -1 && type === -1)) {
+      setVoted(0);
+      dispatch(
+        asyncVoteThreadDetail({
+          type: 0,
+          threadId: threadDetail?.id as ThreadDetail["id"],
+        })
+      );
+      return;
+    }
+
+    setVoted(type);
+    dispatch(
+      asyncVoteThreadDetail({
+        type,
+        threadId: threadDetail?.id as ThreadDetail["id"],
+      })
+    );
+  };
 
   return (
     <main className="container mx-auto flex flex-col gap-2 p-4">
@@ -49,13 +79,15 @@ const ThreadDetailPage = () => {
           </p>
           <section className="flex gap-4">
             <button
-              className={`flex items-center ${upVoted && "text-green-500"}`}
+              onClick={() => vote(1)}
+              className={`flex items-center ${voted === 1 && "text-green-500"}`}
             >
               <RiArrowUpSLine className="text-2xl" />{" "}
               {threadDetail.upVotesBy.length}
             </button>
             <button
-              className={`flex items-center ${downVoted && "text-red-500"}`}
+              onClick={() => vote(-1)}
+              className={`flex items-center ${voted === -1 && "text-red-500"}`}
             >
               <RiArrowDownSLine className="text-2xl" />{" "}
               {threadDetail.downVotesBy.length}
@@ -91,7 +123,7 @@ const ThreadDetailPage = () => {
                 <section className="mt-2 flex gap-4">
                   <button
                     className={`flex items-center ${
-                      isVoted(comment.upVotesBy) && "text-green-500"
+                      voted === 1 && "text-green-500"
                     }`}
                   >
                     <RiArrowUpSLine className="text-lg" />{" "}
@@ -99,7 +131,7 @@ const ThreadDetailPage = () => {
                   </button>
                   <button
                     className={`flex items-center ${
-                      isVoted(comment.downVotesBy) && "text-green-500"
+                      voted === -1 && "text-green-500"
                     }`}
                   >
                     <RiArrowDownSLine className="text-lg" />{" "}

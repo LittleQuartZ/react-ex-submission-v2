@@ -10,21 +10,26 @@ export const ENDPOINTS = {
   getProfile: "/users/me",
   getAllUsers: "/users",
   registerUser: "/register",
+  voteThread: {
+    "-1": "down-vote",
+    "0": "neutral-vote",
+    "1": "up-vote",
+  },
 };
 
-export type Response<T> = {
+export interface Response<T> {
   status: "fail" | "success";
   message: string;
   data: T;
-};
+}
 
-export type User = {
+export interface User {
   id: string;
   name: string;
   avatar: string;
-};
+}
 
-export type Thread = {
+export interface Thread {
   id: string;
   title: string;
   body: string;
@@ -34,38 +39,38 @@ export type Thread = {
   upVotesBy: User["id"][];
   downVotesBy: User["id"][];
   totalComments: number;
-};
+}
 
-export type Comment = {
+export interface Comment {
   id: string;
   content: string;
   createdAt: string;
   owner: User;
   upVotesBy: User["id"][];
   downVotesBy: User["id"][];
-};
+}
 
 export type ThreadDetail = Omit<Thread, "ownerId" | "totalComments"> & {
   owner: User;
   comments: Comment[];
 };
 
-export type ILogin = {
+export interface ILogin {
   email: string;
   password: string;
-};
+}
 
-export type IThread = {
+export interface IThread {
   title: Thread["title"];
   body: Thread["body"];
   category: Thread["category"];
-};
+}
 
-export type IRegister = {
+export interface IRegister {
   name: string;
   email: string;
   password: string;
-};
+}
 
 const handleError = (error: unknown) => {
   if (error instanceof AxiosError) {
@@ -220,6 +225,41 @@ export const registerUser = async ({ name, email, password }: IRegister) => {
     }
 
     return response.data.data.user;
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
+export interface Vote {
+  id: string;
+  userId: User["id"];
+  threadId: Thread["id"];
+  voteType: -1 | 0 | 1;
+}
+
+export const voteThread = async (
+  {
+    type,
+    threadId,
+  }: {
+    type: Vote["voteType"];
+    threadId: Vote["threadId"];
+  },
+  token: string
+) => {
+  try {
+    const response = await withAuth(token).post<Response<{ vote: Vote }>>(
+      BASE_URL +
+        ENDPOINTS.getThreadDetail.split(":")[0] +
+        threadId +
+        `/${ENDPOINTS.voteThread[type]}`
+    );
+
+    if (response.data.status === "fail") {
+      throw new Error(`Failed registering user: ${response.data.message}`);
+    }
+
+    return response.data.data.vote;
   } catch (error) {
     return handleError(error);
   }
